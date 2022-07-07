@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:m335/model/gameImage.dart';
@@ -37,13 +38,24 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   //!!
   double xStart = 0;
-  double yStart = 500;
-  double xTarget = 0;
-  double yTarget = 10;
+  double yStart = 30;
+  double xEnd = 0;
+  double yEnd = -150;
+
+  double xAlignTarget = 0.6;
+
+  double targetX = 150;
+
+  bool boolVisible = false;
+
+  int points = 0;
+
+  double xRandomTarget = 0;
 
   double xValue = 0;
-  double yValueBoard = 0.3;
-  double yValueBullet = 0.3;
+  double yValueBoard = 1;
+  double yValueBullet = 1;
+  //double yValueBullet = 0.3;
   late StreamSubscription subscription;
 
   double bottomBullet = 150;
@@ -58,14 +70,45 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  method() {
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
+  bulletRunTarget() {
+    setState(() {
+      //xStart = xEnd;
+      boolVisible = true;
+      yStart = MediaQuery.of(context).size.height;
+    });
+
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      if (xRandomTarget + 0.15 >= xValue && xRandomTarget - 0.15 <= xValue) {
         setState(() {
-          xStart = xTarget;
-          yStart = yTarget;
+          points++;
         });
       }
+      generateRandomTargetX();
+    });
+
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      resetBulletPosition();
+    });
+  }
+
+//hier noch schauen, dass auch negative zahl
+//Random().nextDouble() gibt Zahl zwischen 0 und 1
+  generateRandomTargetX() {
+    setState(() {
+      bool randomBool = Random().nextBool();
+      if (randomBool) {
+        xRandomTarget = Random().nextDouble();
+      } else {
+        xRandomTarget = Random().nextDouble() * -1;
+      }
+    });
+  }
+
+  resetBulletPosition() {
+    setState(() {
+      boolVisible = false;
+      yValueBullet = yValueBoard;
+      yStart = 30;
     });
   }
 
@@ -84,19 +127,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double a = 50;
-    double b = 50;
-
-    moveBullet() {
-      setState(() {
-        a = 160;
-      });
-    }
-
     return Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.black,
-              title: (Text('erzielte Punkte')),
+              title: (Text('Erzielte Punkte: $points')),
             ),
             body: Stack(
               children: <Widget>[
@@ -106,32 +140,42 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: MediaQuery.of(context).size.height,
                   color: Colors.black,
                 ),
-                Positioned(
-                  //target
-                  child: Container(
-                    width: 50,
-                    height: 9,
-                    color: Colors.green,
-                  ),
-                  top: 0,
-                  right: MediaQuery.of(context).size.width * 0.3,
-                ),
                 AnimatedPositioned(
+                  //target
                   curve: Curves.linear,
-                  duration: const Duration(milliseconds: 1000),
-                  top: yStart.toDouble(),
+                  duration: const Duration(milliseconds: 500),
+                  top: 0,
                   left: xStart.toDouble(),
-
-                  //objekt
                   child: Container(
-                    child: Objekt(),
-                    //alignment: Alignment(xValue, yValueBoard),
+                    child: Container(
+                      color: Colors.green,
+                      height: 5,
+                      width: 45,
+                    ),
+                    alignment: Alignment(xRandomTarget, -1),
                     width: MediaQuery.of(context).size.width,
-                    //width: 100,
-                    height: 90,
+                    height: 20,
                     color: Colors.black,
                   ),
                 ),
+                AnimatedPositioned(
+                    curve: Curves.linear,
+                    duration: const Duration(milliseconds: 1000),
+                    bottom: yStart.toDouble(),
+                    left: xStart.toDouble(),
+
+                    //objekt
+                    child: Visibility(
+                      child: Container(
+                        child: Objekt(),
+                        alignment: Alignment(xValue,
+                            yValueBullet), //diesen wert hat geschossene kugel
+                        width: MediaQuery.of(context).size.width,
+                        height: 20,
+                        color: Colors.black,
+                      ),
+                      visible: boolVisible,
+                    )),
                 Positioned(
                   //board
                   child: AnimatedContainer(
@@ -139,12 +183,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: GameImage(),
                     alignment: Alignment(xValue, yValueBoard),
                     width: MediaQuery.of(context).size.width,
-                    //width: 80,
                     height: 90,
                     color: Colors.black,
                   ),
-                  //bottom: b,
-                  top: 500,
+                  bottom: 30,
                 ),
                 Positioned(
                   child: ElevatedButton(
@@ -153,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       style: TextStyle(color: Colors.black),
                     ),
                     onPressed: () {
-                      method();
+                      bulletRunTarget();
                     },
                   ),
                   bottom: 0,
