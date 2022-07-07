@@ -35,14 +35,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  //!!
+  double xStart = 0;
+  double yStart = 500;
+  double xTarget = 0;
+  double yTarget = 10;
+
   double xValue = 0;
   double yValueBoard = 0.3;
   double yValueBullet = 0.3;
   late StreamSubscription subscription;
 
   double bottomBullet = 150;
-  static double a = 50;
-  static double b = 50;
 
   @override
   void initState() {
@@ -51,6 +55,17 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         moveImg(event.x);
       });
+    });
+  }
+
+  method() {
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
+          xStart = xTarget;
+          yStart = yTarget;
+        });
+      }
     });
   }
 
@@ -67,27 +82,29 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  moveBullet() {
-    setState(() {
-      b = 160;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    double a = 50;
+    double b = 50;
+
+    moveBullet() {
+      setState(() {
+        a = 160;
+      });
+    }
+
     return Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.black,
               title: (Text('erzielte Punkte')),
             ),
             body: Stack(
-              overflow: Overflow.visible,
               children: <Widget>[
                 Container(
                   //background
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
-                  color: Colors.red,
+                  color: Colors.black,
                 ),
                 Positioned(
                   //target
@@ -99,10 +116,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   top: 0,
                   right: MediaQuery.of(context).size.width * 0.3,
                 ),
-                Positioned(
+                AnimatedPositioned(
+                  curve: Curves.linear,
+                  duration: const Duration(milliseconds: 1000),
+                  top: yStart.toDouble(),
+                  left: xStart.toDouble(),
+
                   //objekt
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 1000),
+                  child: Container(
                     child: Objekt(),
                     //alignment: Alignment(xValue, yValueBoard),
                     width: MediaQuery.of(context).size.width,
@@ -110,7 +131,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 90,
                     color: Colors.black,
                   ),
-                  bottom: a,
                 ),
                 Positioned(
                   //board
@@ -123,15 +143,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 90,
                     color: Colors.black,
                   ),
-                  bottom: b,
+                  //bottom: b,
+                  top: 500,
                 ),
                 Positioned(
-                  child: OutlinedButton(
+                  child: ElevatedButton(
                     child: Text(
                       'shoot',
                       style: TextStyle(color: Colors.black),
                     ),
-                    onPressed: moveBullet(),
+                    onPressed: () {
+                      method();
+                    },
                   ),
                   bottom: 0,
                   right: MediaQuery.of(context).size.width * 0.1,
