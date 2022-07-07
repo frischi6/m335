@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:m335/model/gameImage.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
+import 'model/object.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -34,7 +36,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   double xValue = 0;
+  double yValueBoard = 0.3;
+  double yValueBullet = 0.3;
   late StreamSubscription subscription;
+
+  double bottomBullet = 150;
+  static double a = 50;
+  static double b = 50;
 
   @override
   void initState() {
@@ -49,33 +57,107 @@ class _MyHomePageState extends State<MyHomePage> {
   void moveImg(double effectiveX) {
     double theEffectiveX = effectiveX;
     setState(() {
-      if (theEffectiveX > 2.2) {
-        theEffectiveX = 2.2;
-      } else if (theEffectiveX < -2.2) {
-        theEffectiveX = -2.2;
+      if (theEffectiveX > 2.0) {
+        theEffectiveX = 2.0;
+      } else if (theEffectiveX < -2.0) {
+        theEffectiveX = -2.0;
       }
 
-      xValue = theEffectiveX / 2.2 * -1;
+      xValue = theEffectiveX / 2.0 * -1;
+    });
+  }
+
+  moveBullet() {
+    setState(() {
+      b = 160;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Row(
-        children: [
-          Expanded(
-              child: AnimatedContainer(
-            color: Colors.black,
-            duration: Duration(milliseconds: 1000),
-            alignment: Alignment(this.xValue, 0.3),
-            child: GameImage(),
-          )),
-        ],
-      ),
-    );
+            appBar: AppBar(
+              backgroundColor: Colors.black,
+              title: (Text('erzielte Punkte')),
+            ),
+            body: Stack(
+              overflow: Overflow.visible,
+              children: <Widget>[
+                Container(
+                  //background
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  color: Colors.red,
+                ),
+                Positioned(
+                  //target
+                  child: Container(
+                    width: 50,
+                    height: 9,
+                    color: Colors.green,
+                  ),
+                  top: 0,
+                  right: MediaQuery.of(context).size.width * 0.3,
+                ),
+                Positioned(
+                  //objekt
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 1000),
+                    child: Objekt(),
+                    //alignment: Alignment(xValue, yValueBoard),
+                    width: MediaQuery.of(context).size.width,
+                    //width: 100,
+                    height: 90,
+                    color: Colors.black,
+                  ),
+                  bottom: a,
+                ),
+                Positioned(
+                  //board
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 1000),
+                    child: GameImage(),
+                    alignment: Alignment(xValue, yValueBoard),
+                    width: MediaQuery.of(context).size.width,
+                    //width: 80,
+                    height: 90,
+                    color: Colors.black,
+                  ),
+                  bottom: b,
+                ),
+                Positioned(
+                  child: OutlinedButton(
+                    child: Text(
+                      'shoot',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: moveBullet(),
+                  ),
+                  bottom: 0,
+                  right: MediaQuery.of(context).size.width * 0.1,
+                ),
+              ],
+            ))
+        /*.Stack(
+  children: <Widget>[
+    Container(
+      width: 100,
+      height: 100,
+      color: Colors.red,
+    ),
+    Container(
+      width: 90,
+      height: 90,
+      color: Colors.green,
+    ),
+    Container(
+      width: 80,
+      height: 80,
+      color: Colors.blue,
+    ),
+  ],
+)*/
+
+        ;
   }
 }
