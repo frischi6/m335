@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:m335/pages/startPage.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
 import '../model/gameImage.dart';
@@ -174,20 +175,43 @@ class _TheGamePage extends State<TheGamePage> {
                 height: 90,
                 color: Colors.white,
               ),
-              bottom: 30,
+              bottom: 50,
             ),
             Positioned(
-              child: ElevatedButton(
-                child: Text(
-                  'shoot',
-                  style: TextStyle(color: Colors.black),
-                ),
-                onPressed: () {
-                  bulletRunTarget();
-                },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    child: Text(
+                      'back',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return StartPage();
+                        }),
+                      );
+                    },
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.1,
+                  ),
+                  ElevatedButton(
+                    child: Text(
+                      'shoot',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () {
+                      bulletRunTarget();
+                    },
+                  ),
+                ],
               ),
               bottom: 0,
-              right: MediaQuery.of(context).size.width * 0.1,
+              right: 5,
+              //right: MediaQuery.of(context).size.width * 0.1,
             ),
           ],
         ));

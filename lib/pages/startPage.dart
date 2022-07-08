@@ -41,8 +41,15 @@ class _MyStartPage extends State<MyStartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Game Target')),
-      body: Column(
+      appBar: AppBar(
+        title: Center(
+          child: Text('Game Target'),
+        ),
+      ),
+      body: Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ElevatedButton(
               child: Text('Play in Space World'),
@@ -57,6 +64,9 @@ class _MyStartPage extends State<MyStartPage> {
                   }),
                 );
               }),
+          SizedBox(
+            height: 20,
+          ),
           ElevatedButton(
               child: Text('Play in Soccer World'),
               onPressed: () {
@@ -71,7 +81,7 @@ class _MyStartPage extends State<MyStartPage> {
                 );
               }),
         ],
-      ),
+      )),
     );
   }
 }
