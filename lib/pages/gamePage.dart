@@ -36,29 +36,16 @@ class TheGamePage extends StatefulWidget {
 }
 
 class _TheGamePage extends State<TheGamePage> {
-  //!!
   double xStart = 0;
   double yStart = 30;
-  double xEnd = 0;
-  double yEnd = -150;
-
-  double xAlignTarget = 0.6;
-
-  double targetX = 150;
-
   bool boolVisible = false;
-
   int points = 0;
 
   double xRandomTarget = 0;
-
   double xValue = 0;
   double yValueBoard = 1;
   double yValueBullet = 1;
-  //double yValueBullet = 0.3;
   late StreamSubscription subscription;
-
-  double bottomBullet = 150;
 
   @override
   void initState() {
@@ -72,7 +59,6 @@ class _TheGamePage extends State<TheGamePage> {
 
   bulletRunTarget() {
     setState(() {
-      //xStart = xEnd;
       boolVisible = true;
       yStart = MediaQuery.of(context).size.height;
     });
@@ -91,8 +77,6 @@ class _TheGamePage extends State<TheGamePage> {
     });
   }
 
-//hier noch schauen, dass auch negative zahl
-//Random().nextDouble() gibt Zahl zwischen 0 und 1
   generateRandomTargetX() {
     setState(() {
       bool randomBool = Random().nextBool();
@@ -128,105 +112,84 @@ class _TheGamePage extends State<TheGamePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.black,
-              title: (Text('Erzielte Punkte: $points')),
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          title: (Text('Your Points: $points')),
+        ),
+        body: Stack(
+          children: <Widget>[
+            Container(
+              //background
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              color: Colors.white,
             ),
-            body: Stack(
-              children: <Widget>[
-                Container(
-                  //background
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  color: Colors.white,
+            AnimatedPositioned(
+              //target
+              curve: Curves.linear,
+              duration: const Duration(milliseconds: 500),
+              top: 0,
+              left: xStart.toDouble(),
+              child: Container(
+                child: Container(
+                  color: Colors.red,
+                  height: 5,
+                  width: 45,
                 ),
-                AnimatedPositioned(
-                  //target
-                  curve: Curves.linear,
-                  duration: const Duration(milliseconds: 500),
-                  top: 0,
-                  left: xStart.toDouble(),
+                alignment: Alignment(xRandomTarget, -1),
+                width: MediaQuery.of(context).size.width,
+                height: 20,
+                color: Colors.white,
+              ),
+            ),
+            AnimatedPositioned(
+                curve: Curves.linear,
+                duration: const Duration(milliseconds: 1000),
+                bottom: yStart.toDouble(),
+                left: xStart.toDouble(),
+
+                //objekt
+                child: Visibility(
                   child: Container(
-                    child: Container(
-                      color: Colors.red,
-                      height: 5,
-                      width: 45,
+                    child: Objekt(
+                      chosenWorld: widget.selectedWorld,
                     ),
-                    alignment: Alignment(xRandomTarget, -1),
+                    alignment: Alignment(xValue,
+                        yValueBullet), //diesen wert hat geschossene kugel
                     width: MediaQuery.of(context).size.width,
                     height: 20,
                     color: Colors.white,
                   ),
+                  visible: boolVisible,
+                )),
+            Positioned(
+              //board
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 1000),
+                child: GameImage(
+                  chosenWorld: widget.selectedWorld,
                 ),
-                AnimatedPositioned(
-                    curve: Curves.linear,
-                    duration: const Duration(milliseconds: 1000),
-                    bottom: yStart.toDouble(),
-                    left: xStart.toDouble(),
-
-                    //objekt
-                    child: Visibility(
-                      child: Container(
-                        child: Objekt(
-                          chosenWorld: widget.selectedWorld,
-                        ),
-                        alignment: Alignment(xValue,
-                            yValueBullet), //diesen wert hat geschossene kugel
-                        width: MediaQuery.of(context).size.width,
-                        height: 20,
-                        color: Colors.white,
-                      ),
-                      visible: boolVisible,
-                    )),
-                Positioned(
-                  //board
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 1000),
-                    child: GameImage(
-                      chosenWorld: widget.selectedWorld,
-                    ),
-                    alignment: Alignment(xValue, yValueBoard),
-                    width: MediaQuery.of(context).size.width,
-                    height: 90,
-                    color: Colors.white,
-                  ),
-                  bottom: 30,
+                alignment: Alignment(xValue, yValueBoard),
+                width: MediaQuery.of(context).size.width,
+                height: 90,
+                color: Colors.white,
+              ),
+              bottom: 30,
+            ),
+            Positioned(
+              child: ElevatedButton(
+                child: Text(
+                  'shoot',
+                  style: TextStyle(color: Colors.black),
                 ),
-                Positioned(
-                  child: ElevatedButton(
-                    child: Text(
-                      'shoot',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    onPressed: () {
-                      bulletRunTarget();
-                    },
-                  ),
-                  bottom: 0,
-                  right: MediaQuery.of(context).size.width * 0.1,
-                ),
-              ],
-            ))
-        /*.Stack(
-  children: <Widget>[
-    Container(
-      width: 100,
-      height: 100,
-      color: Colors.red,
-    ),
-    Container(
-      width: 90,
-      height: 90,
-      color: Colors.green,
-    ),
-    Container(
-      width: 80,
-      height: 80,
-      color: Colors.blue,
-    ),
-  ],
-)*/
-
-        ;
+                onPressed: () {
+                  bulletRunTarget();
+                },
+              ),
+              bottom: 0,
+              right: MediaQuery.of(context).size.width * 0.1,
+            ),
+          ],
+        ));
   }
 }
